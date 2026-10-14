@@ -1,0 +1,24 @@
+{
+  "name": "@aihot/leaderboard",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./module.ts",
+    "./module": "./module.ts",
+    "./contracts": "./contracts.ts",
+    "./server": "./server.ts",
+    "./web": "./web.tsx",
+    "./backend/*": "./backend/*.ts",
+    "./api/*": "./api/*.ts"
+  },
+  "dependencies": {
+    "@aihot/api": "*",
+    "@aihot/backend": "*",
+    "@aihot/contracts": "*",
+    "@aihot/site": "*",
+    "fastify": "5.12.5",
+    "highs": "1.15.3",
+    "hyparquet": "1.31.1"
+  }
+}

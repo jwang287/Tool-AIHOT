@@ -78,7 +78,7 @@ export function nameMark(size: number, color: string, dot: string): Node {
   ]);
 }
 
-const ACCENTS = { teal: "#2ce2e8", hot: "#ff7a5f", amber: "#e2b454" } as const;
+const ACCENTS = { teal: "#4f8cff", hot: "#f9702e", amber: "#f0b429" } as const;
 
 export function clamp(text: string, max: number) {
   const chars = [...text.replace(/\s+/g, " ").trim()];
@@ -98,14 +98,14 @@ async function tree(card: OgCard): Promise<Node> {
       flexDirection: "column",
       padding: "64px 72px",
       fontFamily: "Noto Sans SC",
-      color: "#e6eded",
-      backgroundColor: "#0a1012",
-      backgroundImage: "radial-gradient(circle at 88% 8%, rgba(44,226,232,0.28), rgba(10,16,18,0) 46%), radial-gradient(circle at 0% 100%, rgba(23,107,117,0.35), rgba(10,16,18,0) 50%)",
+      color: "#e8edf4",
+      backgroundColor: "#0a1119",
+      backgroundImage: "radial-gradient(circle at 88% 8%, rgba(79,140,255,0.28), rgba(10,17,25,0) 46%), radial-gradient(circle at 0% 100%, rgba(37,99,235,0.32), rgba(10,17,25,0) 50%)",
     },
     [
       h("div", { display: "flex", alignItems: "center", justifyContent: "space-between" }, [
-        (await brandMark("wordmark-dark.svg", 40)) ?? nameMark(34, "#e6eded", "#2ce2e8"),
-        h("div", { display: "flex", fontSize: 24, color: "#82939a" }, SITE_HOST),
+        (await brandMark("wordmark-dark.svg", 40)) ?? nameMark(34, "#e8edf4", "#4f8cff"),
+        h("div", { display: "flex", fontSize: 24, color: "#8494a6" }, SITE_HOST),
       ]),
       h("div", { display: "flex", marginTop: 56, alignItems: "center" }, [
         h("div", { width: 10, height: 10, borderRadius: 999, backgroundColor: accent, marginRight: 14 }),
@@ -120,11 +120,11 @@ async function tree(card: OgCard): Promise<Node> {
         card.badge
           ? h("div", { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 170, height: 170, borderRadius: 999, border: `6px solid ${accent}` }, [
               h("div", { display: "flex", fontSize: 58, fontWeight: 700, color: "#ffffff" }, card.badge.value),
-              h("div", { display: "flex", fontSize: 22, color: "#82939a" }, card.badge.label),
+              h("div", { display: "flex", fontSize: 22, color: "#8494a6" }, card.badge.label),
             ])
           : null,
       ].filter(Boolean)),
-      card.meta ? h("div", { display: "flex", fontSize: 24, color: "#82939a", borderTop: "1px solid rgba(230,237,237,0.12)", paddingTop: 22 }, clamp(card.meta, 70)) : null,
+      card.meta ? h("div", { display: "flex", fontSize: 24, color: "#8494a6", borderTop: "1px solid rgba(230,237,237,0.12)", paddingTop: 22 }, clamp(card.meta, 70)) : null,
     ].filter(Boolean),
   );
 }

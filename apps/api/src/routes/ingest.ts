@@ -27,6 +27,7 @@ function limited(key: string, perMinute: number): boolean {
   if (list.length >= perMinute) return true;
   list.push(now);
   windows.set(key, list);
+  if (windows.size > 5000) for (const [k, v] of windows) if (v.every((t) => now - t > 60_000)) windows.delete(k);
   return false;
 }
 

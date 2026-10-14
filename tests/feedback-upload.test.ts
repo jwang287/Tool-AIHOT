@@ -33,7 +33,7 @@ async function upload(file: Buffer, ip: string, type = "image/png") {
   form.set("screenshot", new File([new Uint8Array(file)], "screenshot.png", { type }));
   const request = new Request("http://local/api/site/feedback", { method: "POST", body: form });
   const payload = Buffer.from(await request.arrayBuffer());
-  return app.inject({ method: "POST", url: "/api/site/feedback", headers: { "content-type": request.headers.get("content-type")!, "x-real-ip": ip }, payload });
+  return app.inject({ method: "POST", url: "/api/site/feedback", headers: { "content-type": request.headers.get("content-type")!, "x-forwarded-for": ip }, payload });
 }
 
 test("a 5 MiB multipart screenshot waits intact for forwarding", async () => {
@@ -75,6 +75,25 @@ test("a picture sent without a type (some phones do) is taken by its bytes", asy
   assert.equal(result.statusCode, 201, result.body);
   const [row] = await sql`SELECT screenshot_key FROM feedback WHERE id = ${result.json().id}`;
   assert.match(row!.screenshot_key, /\.png$/);
+});
+
+async function uploadForged(file: Buffer, ip: string, forged: string) {
+  const form = new FormData();
+  form.set("content", "手机截图反馈，文字保持不变");
+  const request = new Request("http://local/api/site/feedback", { method: "POST", body: form });
+  const payload = Buffer.from(await request.arrayBuffer());
+  return app.inject({ method: "POST", url: "/api/site/feedback", headers: { "content-type": request.headers.get("content-type")!, "x-forwarded-for": ip, "x-real-ip": forged }, payload });
+}
+
+test("feedback rate limit follows the proxy-resolved address, not a forged header", async () => {
+  const file = await png(2048);
+  for (let i = 0; i < 5; i++) {
+    const result = await uploadForged(file, "203.0.113.231", `10.9.9.${i}`);
+    assert.equal(result.statusCode, 201, result.body);
+  }
+  // A fresh forged address does not reopen the budget: the sixth post is still limited.
+  const sixth = await uploadForged(file, "203.0.113.231", "10.9.9.99");
+  assert.equal(sixth.statusCode, 429, sixth.body);
 });
 
 // Each feedback owns its temporary screenshot: identical uploads must survive another feedback's

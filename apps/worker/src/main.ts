@@ -26,6 +26,15 @@ await registerNotifyJobs(boss);
 await registerPublicationJobs(boss);
 await workModuleQueues(boss);
 await registerSchedules(boss);
+// A module's first run, on a database that has none of what its schedules expect.
+for (const m of SERVER_MODULES) {
+  if (!m.started) continue;
+  try {
+    await m.started();
+  } catch (error) {
+    console.error(JSON.stringify({ level: "error", msg: "module start failed", module: m.name, error: String(error) }));
+  }
+}
 const heartbeat = startHeartbeat("worker");
 console.log(JSON.stringify({ level: "info", msg: "worker started", pid: process.pid }));
 

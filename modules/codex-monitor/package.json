@@ -1,0 +1,24 @@
+{
+  "name": "@aihot/codex-monitor",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./module.ts",
+    "./module": "./module.ts",
+    "./contracts": "./contracts.ts",
+    "./server": "./server.ts",
+    "./web": "./web.tsx",
+    "./backend/*": "./backend/*.ts",
+    "./api/*": "./api/*.ts"
+  },
+  "dependencies": {
+    "@aihot/api": "*",
+    "@aihot/backend": "*",
+    "@aihot/contracts": "*",
+    "@aihot/site": "*",
+    "fast-xml-parser": "5.11.1",
+    "fastify": "5.12.5",
+    "zod": "4.6.5"
+  }
+}

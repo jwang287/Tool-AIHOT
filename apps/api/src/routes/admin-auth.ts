@@ -38,7 +38,10 @@ function over(key: string, limit: number, now: number): boolean {
 }
 function tooManyAttempts(ip: string): boolean {
   const now = Date.now();
-  if (attempts.size > 5000) attempts.clear();
+  // Evict expired entries instead of clearing: a full clear would reopen the window for an attacker
+  // cycling many addresses. Each api process keeps its own budget; with several replicas the per-client
+  // cap is divided among them, while the overall cap still holds because every replica counts every attempt.
+  if (attempts.size > 5000) for (const [k, v] of attempts) if (v.every((t) => now - t > 15 * 60_000)) attempts.delete(k);
   const perClient = over(`ip:${ip}`, 10, now);
   return over("all", 50, now) || perClient;
 }
@@ -67,7 +70,7 @@ export function adminHandler(fn: AdminHandler) {
       }
       if ((error as { code?: string }).code === "conflict") return sendProblem(req, reply, { status: 409, code: "conflict", detail: (error as Error).message });
       req.log.error({ err: error, path: req.url.split("?")[0] }, "admin api error");
-      return sendProblem(req, reply, { status: 500, code: "internal_error", detail: String((error as Error).message).slice(0, 300) });
+      return sendProblem(req, reply, { status: 500, code: "internal_error", detail: "服务器内部错误，请稍后再试。" });
     }
   };
 }

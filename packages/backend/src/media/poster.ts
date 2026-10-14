@@ -19,8 +19,8 @@ export interface Poster {
   score: number | null;
 }
 
-const INK = "#0e191b";
-const ACCENT = "#176b75";
+const INK = "#101b28";
+const ACCENT = "#2563eb";
 
 async function tree(p: Poster): Promise<Node> {
   const title = clamp(p.title, 72);
@@ -40,7 +40,7 @@ async function tree(p: Poster): Promise<Node> {
       fontFamily: "Noto Sans SC",
       color: INK,
       backgroundColor: "#f5f6f5",
-      backgroundImage: "radial-gradient(circle at 100% 0%, rgba(23,107,117,0.16), rgba(245,246,245,0) 52%), radial-gradient(circle at 0% 100%, rgba(44,226,232,0.10), rgba(245,246,245,0) 45%)",
+      backgroundImage: "radial-gradient(circle at 100% 0%, rgba(37,99,235,0.14), rgba(245,246,245,0) 52%), radial-gradient(circle at 0% 100%, rgba(79,140,255,0.10), rgba(245,246,245,0) 45%)",
     },
     [
       h("div", { display: "flex", alignItems: "center", justifyContent: "space-between" }, [
@@ -51,7 +51,7 @@ async function tree(p: Poster): Promise<Node> {
         h("div", { width: 12, height: 12, borderRadius: 999, backgroundColor: ACCENT, marginRight: 16 }),
         h("div", { display: "flex", fontSize: 30, fontWeight: 700, color: ACCENT, letterSpacing: 1 }, clamp(p.kicker, 20)),
         p.score !== null
-          ? h("div", { display: "flex", marginLeft: 20, padding: "4px 16px", borderRadius: 999, backgroundColor: "rgba(23,107,117,0.09)", fontSize: 26, color: "#0f5a63" }, `精选 · ${Math.round(p.score)} 分`)
+          ? h("div", { display: "flex", marginLeft: 20, padding: "4px 16px", borderRadius: 999, backgroundColor: "rgba(37,99,235,0.09)", fontSize: 26, color: "#1b4fd1" }, `精选 · ${Math.round(p.score)} 分`)
           : null,
       ].filter(Boolean)),
       h("div", { display: "flex", marginTop: 30, fontSize: titleSize, fontWeight: 700, lineHeight: 1.3, color: INK }, title),

@@ -1,0 +1,28 @@
+-- One evaluation row per model and configuration, with the metadata the evidence view shows.
+CREATE TABLE lb_scores (
+    id text NOT NULL,
+    snapshot_id text NOT NULL,
+    model_id text NOT NULL,
+    configuration_key text NOT NULL,
+    configuration_label text,
+    configuration_kind text,
+    configuration_priority integer,
+    selected_for_product boolean NOT NULL DEFAULT false,
+    selection_reason text,
+    metric_key text NOT NULL,
+    metric_name text,
+    raw_score double precision,
+    normalized_score double precision,
+    lower_bound double precision,
+    upper_bound double precision,
+    source_rank integer,
+    sample_size integer,
+    source_model_name text,
+    source_organization text,
+    source_published_at timestamptz,
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (id),
+    FOREIGN KEY (snapshot_id) REFERENCES lb_snapshots(id) ON DELETE CASCADE,
+    FOREIGN KEY (model_id) REFERENCES lb_models(id)
+);

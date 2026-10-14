@@ -228,6 +228,12 @@ export interface ServerModule {
   models?: Record<string, ModelStep>;
   /** Cron schedules (the worker). */
   schedules?: Scheduled[];
+  /**
+   * Work to do once when the worker starts, after its queues and schedules are registered (apps/worker/src/main.ts):
+   * a new database has none of what a schedule expects, so a module can start its first run here. A failure is
+   * logged and the worker keeps running; the schedules pick the work up at their next slot.
+   */
+  started?: () => Promise<void>;
   /** What is wrong now, for the owner's alerts (operations/alerts.ts), after the engine's problems. */
   alerts?: (now: number) => Promise<Finding[]>;
   /**
