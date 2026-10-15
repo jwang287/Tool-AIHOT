@@ -6,13 +6,15 @@
 @source "../../../modules/*/{web.tsx,web/**}";
 
 /* ---------------------------------------------------------------------------
-   Design tokens: cool paper (light) / deep night blue (dark), ink text, a blue
-   accent with an orange-yellow highlight for heat and ranks, hairline borders,
-   no gradients.
+   Design tokens: three light families (fog white, celadon, sepia paper) and three
+   dark families (night blue, ink black, moss green), ink text, an accent with an
+   orange-yellow highlight for heat and ranks, hairline borders, no gradients.
    Components use the semantic names below; values change per theme only.
+   Whether a theme is dark is carried by data-mode (set next to data-theme),
+   so new themes never touch the dark variant or the dark-only rules.
    --------------------------------------------------------------------------- */
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
 /* The initial family is the reader's standard browser font, unlike system-ui or sans-serif. */
 :root[data-font="browser"] { font-family: initial; }
@@ -80,7 +82,8 @@
   --breakpoint-2xl: 1536px;
 }
 
-:root {
+:root,
+:root[data-theme="light"] {
   /* Page widths follow the screen's shape. Lists fill the screen up to 21:9
      and centre beyond it (32:9); reading pages fill a 16:9 screen and centre on wider ones. A browser
      window is shorter than its screen (tabs, address bar), so a 16:9 screen gives a window of about 2:1
@@ -201,6 +204,218 @@
   --code-variable: #fca36b;
   --code-meta: #ff6188;
   --selection: rgba(79, 140, 255, 0.28);
+}
+
+:root[data-theme="celadon"] {
+  color-scheme: light;
+  /* 瓷青：淡青底 + 墨绿字，强调色青瓷绿 */
+  --bg: #f1f4f2;
+  --bg-sunk: #e4eae6;
+  --bg-muted: #d7e0da;
+  --surface: #fdfffd;
+  --surface-2: #f6faf7;
+  --raised: #ffffff;
+  --sidebar: #f6f9f7;
+  --daybar: #e4eae6;
+  --field: #e4eae6;
+  --ink: #1b2a26;
+  --ink-2: #2c3e39;
+  --ink-3: #556a63;
+  --ink-4: #677d74;
+  --line: #d9e3dd;
+  --line-strong: #bfd0c6;
+  --line-soft: #e4ebe6;
+  --accent: #0f766e;
+  --accent-ink: #0b5c56;
+  --accent-soft: rgba(15, 118, 110, 0.09);
+  --accent-softer: rgba(15, 118, 110, 0.05);
+  --accent-contrast: #ffffff;
+  --note: #4f6a66;
+  --hot: #c2520a;
+  --hot-soft: rgba(194, 82, 10, 0.09);
+  --amber: #9a6a0a;
+  --amber-ink: #7c5200;
+  --amber-soft: rgba(154, 106, 10, 0.11);
+  --ok: #2e7d57;
+  --ok-soft: rgba(46, 125, 87, 0.11);
+  --ok-ink: #276c4b;
+  --rank-1: #c2520a;
+  --rank-2: #a16207;
+  --rank-3: #8f7a1c;
+  --rank-rest: #67776f;
+  --shadow-card: 0 1px 2px rgba(27, 42, 38, 0.03);
+  --shadow-card-hover: 0 3px 12px rgba(27, 42, 38, 0.06);
+  --shadow-soft: 0 4px 12px rgba(27, 42, 38, 0.07);
+  --shadow-thumb: 0 1px 2px rgba(27, 42, 38, 0.1), 0 1px 1px rgba(27, 42, 38, 0.04);
+  --shadow-pop: 0 12px 32px rgba(27, 42, 38, 0.13);
+  --prose-ink: #22302b;
+  --code-bg: #e9f0eb;
+  --code-keyword: #0f56b8;
+  --code-string: #2c6b40;
+  --code-number: #8a5f00;
+  --code-title: #6440b8;
+  --code-variable: #a34d08;
+  --code-meta: #a81f42;
+  --selection: rgba(15, 118, 110, 0.17);
+}
+
+:root[data-theme="sepia"] {
+  color-scheme: light;
+  /* 旧报：暖纸底 + 墨褐字，强调色赭石 */
+  --bg: #f5efe3;
+  --bg-sunk: #ebe2cf;
+  --bg-muted: #dfd2b6;
+  --surface: #fdfaf3;
+  --surface-2: #faf4e8;
+  --raised: #fffdf8;
+  --sidebar: #f9f4e9;
+  --daybar: #ebe2cf;
+  --field: #ebe2cf;
+  --ink: #2b2519;
+  --ink-2: #3e372a;
+  --ink-3: #6c6149;
+  --ink-4: #7e7358;
+  --line: #ded2b8;
+  --line-strong: #c8b892;
+  --line-soft: #e7dcc4;
+  --accent: #9a4d0a;
+  --accent-ink: #7e3d06;
+  --accent-soft: rgba(154, 77, 10, 0.1);
+  --accent-softer: rgba(154, 77, 10, 0.055);
+  --accent-contrast: #fffaf0;
+  --note: #6e6041;
+  --hot: #bf4d08;
+  --hot-soft: rgba(191, 77, 8, 0.1);
+  --amber: #96690a;
+  --amber-ink: #7a5200;
+  --amber-soft: rgba(150, 105, 10, 0.12);
+  --ok: #3f7d53;
+  --ok-soft: rgba(63, 125, 83, 0.11);
+  --ok-ink: #356a46;
+  --rank-1: #bf4d08;
+  --rank-2: #96690a;
+  --rank-3: #87771c;
+  --rank-rest: #7e7460;
+  --shadow-card: 0 1px 2px rgba(62, 48, 20, 0.03);
+  --shadow-card-hover: 0 3px 12px rgba(62, 48, 20, 0.06);
+  --shadow-soft: 0 4px 12px rgba(62, 48, 20, 0.07);
+  --shadow-thumb: 0 1px 2px rgba(62, 48, 20, 0.1), 0 1px 1px rgba(62, 48, 20, 0.04);
+  --shadow-pop: 0 12px 32px rgba(62, 48, 20, 0.14);
+  --prose-ink: #332c1e;
+  --code-bg: #efe7d3;
+  --code-keyword: #1a4fae;
+  --code-string: #33663c;
+  --code-number: #8a5f00;
+  --code-title: #6a3fb5;
+  --code-variable: #97460a;
+  --code-meta: #a11c40;
+  --selection: rgba(154, 77, 10, 0.18);
+}
+
+:root[data-theme="ink"] {
+  color-scheme: dark;
+  /* 墨黑：近黑底的中性深色，强调色亮蓝 */
+  --bg: #0b0b0d;
+  --bg-sunk: #131316;
+  --bg-muted: #1e1e24;
+  --surface: #141418;
+  --surface-2: #191920;
+  --raised: #202027;
+  --sidebar: #0e0e11;
+  --daybar: #121215;
+  --field: rgba(255, 255, 255, 0.07);
+  --ink: #edf0f4;
+  --ink-2: #d5d9e0;
+  --ink-3: #a4aebc;
+  --ink-4: #878fa0;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.15);
+  --line-soft: rgba(255, 255, 255, 0.065);
+  --accent: #6ea8ff;
+  --accent-ink: #9dc3ff;
+  --accent-soft: rgba(110, 168, 255, 0.15);
+  --accent-softer: rgba(110, 168, 255, 0.08);
+  --accent-contrast: #06101f;
+  --note: #93a3bd;
+  --hot: #ff7a3c;
+  --hot-soft: rgba(255, 122, 60, 0.15);
+  --amber: #f2b73c;
+  --amber-ink: #f2b73c;
+  --amber-soft: rgba(242, 183, 60, 0.14);
+  --ok: #63c99b;
+  --ok-soft: rgba(99, 201, 155, 0.13);
+  --ok-ink: #82d4ae;
+  --rank-1: #ff7a3c;
+  --rank-2: #efa93e;
+  --rank-3: #f2b73c;
+  --rank-rest: #7e8798;
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.4);
+  --shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --prose-ink: #d9dee6;
+  --code-bg: #0e0e12;
+  --code-keyword: #84b8ff;
+  --code-string: #aede7f;
+  --code-number: #ffda6b;
+  --code-title: #b3a5f5;
+  --code-variable: #ffab70;
+  --code-meta: #ff7a9e;
+  --selection: rgba(110, 168, 255, 0.3);
+}
+
+:root[data-theme="moss"] {
+  color-scheme: dark;
+  /* 苔绿：深苔绿底，强调色新绿 */
+  --bg: #0c1411;
+  --bg-sunk: #101a15;
+  --bg-muted: #1a2921;
+  --surface: #121c17;
+  --surface-2: #15221a;
+  --raised: #1b2c22;
+  --sidebar: #0d1512;
+  --daybar: #111b16;
+  --field: rgba(255, 255, 255, 0.06);
+  --ink: #e9f0ea;
+  --ink-2: #d2dcd4;
+  --ink-3: #a3b5a8;
+  --ink-4: #86978b;
+  --line: rgba(214, 232, 218, 0.1);
+  --line-strong: rgba(214, 232, 218, 0.17);
+  --line-soft: rgba(214, 232, 218, 0.07);
+  --accent: #4ade80;
+  --accent-ink: #8bf0ae;
+  --accent-soft: rgba(74, 222, 128, 0.14);
+  --accent-softer: rgba(74, 222, 128, 0.07);
+  --accent-contrast: #052012;
+  --note: #8db898;
+  --hot: #fb923c;
+  --hot-soft: rgba(251, 146, 60, 0.15);
+  --amber: #fbbf24;
+  --amber-ink: #fbbf24;
+  --amber-soft: rgba(251, 191, 36, 0.14);
+  --ok: #5fd693;
+  --ok-soft: rgba(95, 214, 147, 0.13);
+  --ok-ink: #84e2ab;
+  --rank-1: #fb923c;
+  --rank-2: #f5b83e;
+  --rank-3: #fbbf24;
+  --rank-rest: #75857a;
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.38);
+  --shadow-thumb: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.48);
+  --prose-ink: #d7e1d9;
+  --code-bg: #0d1512;
+  --code-keyword: #83c9ff;
+  --code-string: #a8e08a;
+  --code-number: #ffd166;
+  --code-title: #c4b5fd;
+  --code-variable: #fbbf7a;
+  --code-meta: #ff8fa3;
+  --selection: rgba(74, 222, 128, 0.27);
 }
 
 @layer base {
@@ -326,7 +541,7 @@
 @utility well {
   background-color: var(--bg-sunk);
   box-shadow: inset 0 0 0 1px var(--line-soft);
-  [data-theme="dark"] & {
+  [data-mode="dark"] & {
     background-color: color-mix(in srgb, var(--bg-muted) 60%, transparent);
   }
 }
@@ -578,6 +793,6 @@
 
 /* Report pages read on a faintly toned paper in the light theme, lighter than the site's page ground;
    the archive column is halfway between the site sidebar and white. */
-:root:not([data-theme="dark"]) body:has(.report-shell) {
+:root:not([data-mode="dark"]) body:has(.report-shell) {
   background: color-mix(in srgb, var(--bg) 60%, var(--surface));
 }

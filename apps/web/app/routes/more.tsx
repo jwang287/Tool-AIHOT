@@ -9,9 +9,10 @@ import type { Screen } from "../components/shell/screens";
 import { edgeTtl } from "../lib/api.server";
 import { webModules } from "../site-modules";
 import { pageMeta } from "../lib/seo";
-import { setFontPreference, useFontPreference, useStarred } from "../lib/local-state";
+import { setFontPreference, useFontPreference, useStarred, useThemePreference, resolvedTheme } from "../lib/local-state";
+import { themeOf } from "../lib/themes";
 import { Select } from "../components/ui/Controls";
-import { ThemeSwitch } from "../components/shell/ThemeSwitch";
+import { ThemeGallery } from "../components/shell/ThemePicker";
 import { IconBookmark, IconChevronRight, IconGrid, IconHeart, IconMessage, IconMoon, IconPlug, IconSparkles } from "../components/icons";
 
 export const handle: Screen = { tab: "me", name: "我的" };
@@ -70,6 +71,7 @@ export default function MorePage() {
   const changelogDot = useChangelogDot(root?.changelogVersion ?? null);
   const starred = useStarred();
   const font = useFontPreference();
+  const themePref = useThemePreference();
   // The count is this browser's: shown once the page runs here, never in the shared server copy.
   const [here, setHere] = useState(false);
   useEffect(() => setHere(true), []);
@@ -80,12 +82,15 @@ export default function MorePage() {
       <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-4 2xl:grid-cols-3">
         <Group>
           <RowLink row={{ to: "/starred", label: "收藏", icon: <IconBookmark size={20} />, detail: here && starred.length > 0 ? <span className="num">{starred.length}</span> : undefined }} />
-          <li className="flex min-h-[56px] items-center gap-3 px-4 text-[16px] font-medium text-ink">
-            <span className="text-ink-3">
-              <IconMoon size={20} />
-            </span>
-            <span className="flex-1">外观</span>
-            <ThemeSwitch className="w-[126px]" />
+          <li className="px-4 py-3">
+            <div className="flex items-center gap-3 pb-2.5">
+              <span className="text-ink-3">
+                <IconMoon size={20} />
+              </span>
+              <span className="flex-1 text-[16px] font-medium text-ink">外观</span>
+              {here && <span className="text-[14px] font-normal text-ink-4">{themePref === null ? `跟随系统·${themeOf(resolvedTheme(null)).name}` : themeOf(themePref).name}</span>}
+            </div>
+            <ThemeGallery />
           </li>
           <li className="flex min-h-[56px] items-center gap-3 px-4 text-[16px] font-medium text-ink">
             <span className="w-5 text-center text-ink-3" aria-hidden="true">Aa</span>

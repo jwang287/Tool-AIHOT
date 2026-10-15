@@ -3,6 +3,7 @@
 // Storage failures degrade silently.
 import { useEffect, useSyncExternalStore } from "react";
 import { beijingDate } from "@aihot/contracts/time";
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, isThemeId, systemTheme, THEMES, themeOf, type ThemeId } from "./themes.ts";
 
 export const KEYS = {
   starred: "aihot-starred-items",
@@ -247,11 +248,12 @@ export function setFontPreference(pref: FontPreference) {
   emit(KEYS.font);
 }
 
-export type ThemePreference = "light" | "dark" | null;
+export type ThemePreference = ThemeId | null;
 
+/** A stored id; unknown values (a theme removed after saving) read as never chosen. */
 export function getThemePreference(): ThemePreference {
   const v = readRaw(KEYS.theme);
-  return v === "light" || v === "dark" ? v : null;
+  return isThemeId(v) ? v : null;
 }
 
 export function setThemePreference(pref: ThemePreference) {
@@ -259,24 +261,31 @@ export function setThemePreference(pref: ThemePreference) {
   invalidate(KEYS.theme);
 }
 
-export function resolvedTheme(pref: ThemePreference = getThemePreference()): "light" | "dark" {
+/** Following the system (null) picks between the two classic themes; a chosen theme is used as-is. */
+export function resolvedTheme(pref: ThemePreference = getThemePreference()): ThemeId {
   if (pref) return pref;
   try {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return systemTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
   } catch {
-    return "light";
+    return DEFAULT_LIGHT_THEME;
   }
 }
 
-const THEME_COLOR = { light: "#f7f8fa", dark: "#0d141d" } as const;
-
-/** Puts a theme on the page: the document's data-theme and the browser's theme colour. */
-export function applyTheme(theme: "light" | "dark", followsSystem: boolean) {
-  document.documentElement.setAttribute("data-theme", theme);
+/** Puts a theme on the page: the document's data-theme and data-mode, and the browser's theme colour. */
+export function applyTheme(theme: ThemeId, followsSystem: boolean) {
+  const def = themeOf(theme);
+  const root = document.documentElement;
+  root.setAttribute("data-theme", theme);
+  root.setAttribute("data-mode", def.mode);
+  try {
+    root.style.colorScheme = def.mode;
+  } catch {
+    // Older browsers ignore it; the stylesheet's color-scheme still applies.
+  }
   // The two theme-color tags answer the system scheme; a chosen theme sets both to its own colour.
   for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
     const scheme = meta.media.includes("dark") ? "dark" : "light";
-    meta.content = followsSystem ? THEME_COLOR[scheme] : THEME_COLOR[theme];
+    meta.content = followsSystem ? themeOf(systemTheme(scheme === "dark")).themeColor : def.themeColor;
   }
 }
 
@@ -301,14 +310,15 @@ export function useAppearanceSync() {
     } catch {
       return;
     }
-    const onChange = () => applyTheme(query.matches ? "dark" : "light", true);
+    const onChange = () => applyTheme(systemTheme(query.matches), true);
     query.addEventListener("change", onChange);
     return () => query.removeEventListener("change", onChange);
   }, [pref]);
 }
 
 /** Inline script run before paint so the first frame already has the reader's appearance. */
-export const APPEARANCE_BOOT_SCRIPT = `(function(){var f='system';try{f=localStorage.getItem('${KEYS.font}')==='browser'?'browser':'system'}catch(e){}document.documentElement.setAttribute('data-font',f);try{var t=localStorage.getItem('${KEYS.theme}');if(t==='light'||t==='dark'){var c=t==='dark'?'${THEME_COLOR.dark}':'${THEME_COLOR.light}';document.querySelectorAll('meta[name="theme-color"]').forEach(function(m){m.content=c})}else{t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','light')}})();`;
+const THEME_BOOT_TABLE = JSON.stringify(Object.fromEntries(THEMES.map((t) => [t.id, [t.mode, t.themeColor]] as const)));
+export const APPEARANCE_BOOT_SCRIPT = `(function(){var f='system';try{f=localStorage.getItem('${KEYS.font}')==='browser'?'browser':'system'}catch(e){}document.documentElement.setAttribute('data-font',f);var T=${THEME_BOOT_TABLE};try{var t=localStorage.getItem('${KEYS.theme}');if(!T[t]){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'${DEFAULT_DARK_THEME}':'${DEFAULT_LIGHT_THEME}'}var m=T[t];try{document.documentElement.style.colorScheme=m[0]}catch(e){}document.querySelectorAll('meta[name="theme-color"]').forEach(function(x){x.content=m[1]});document.documentElement.setAttribute('data-mode',m[0]);document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-mode','light');document.documentElement.setAttribute('data-theme','${DEFAULT_LIGHT_THEME}')}})();`;
 
 // changelog red dot
 function getChangelogSeen(): string | null {
@@ -362,7 +372,7 @@ export interface ExportBundle {
   version: 1;
   starred: LocalStarredItem[];
   read: string[];
-  theme: "light" | "dark" | "auto" | null;
+  theme: ThemeId | "auto" | null;
   font?: "system" | "browser";
 }
 
@@ -448,7 +458,7 @@ function mergeLocalData(incoming: { starred: unknown[]; read: unknown[]; theme: 
     const readFailed = !writeRaw(KEYS.read, JSON.stringify([...readIds, ...readAdditions.slice(0, readRoom)]));
 
     let themeApplied = false;
-    if (!getThemePreference() && (incoming.theme === "light" || incoming.theme === "dark")) {
+    if (!getThemePreference() && isThemeId(incoming.theme)) {
       themeApplied = writeRaw(KEYS.theme, incoming.theme);
     }
     const fontApplied = !getFontPreference() && incoming.font === "browser" && writeRaw(KEYS.font, "browser");

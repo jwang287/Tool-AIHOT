@@ -4,7 +4,7 @@ import { SITE } from "@aihot/site";
 import { Wordmark } from "@aihot/site/brand/Logo.tsx";
 import { useChangelogSeen } from "../../lib/local-state";
 import { sidebar, sidebarIsActive, type NavItem } from "./nav";
-import { ThemeSwitch } from "./ThemeSwitch";
+import { ThemeMenu } from "./ThemePicker";
 import { IconGithub } from "../icons";
 
 /** True while the changelog has an entry newer than the one this reader last opened. */
@@ -69,7 +69,7 @@ export function Sidebar({ changelogVersion }: { changelogVersion: string | null 
             GitHub 开源
           </a>
         )}
-        <ThemeSwitch className="mx-1" />
+        <ThemeMenu />
         {SITE.icp && (
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="block px-2 text-[10px] text-ink-4 hover:text-ink-3">
             {SITE.icp}
